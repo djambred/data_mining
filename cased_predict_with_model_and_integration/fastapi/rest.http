@@ -1,0 +1,12 @@
+### Prediction Request
+POST http://127.0.0.1:8000/predict
+Content-Type: application/json
+
+{
+    "name": "Jane Doe",
+    "age": 21,
+    "salary": 1100000,
+    "loan_amount": 10000000,
+    "loan_date": "2025-01-01",
+    "payday": "2025-01-30"
+}

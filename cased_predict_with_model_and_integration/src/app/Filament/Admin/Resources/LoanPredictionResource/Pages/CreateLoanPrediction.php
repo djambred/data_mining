@@ -14,14 +14,23 @@ class CreateLoanPrediction extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // Validate same month/year
-        if (date('Y-m', strtotime($data['loan_date'])) !== date('Y-m', strtotime($data['payday']))) {
-            Notification::make()
-                ->title('Tanggal pinjaman dan bayar harus dalam bulan yang sama.')
-                ->danger()
-                ->send();
+        // Ensure loan_date exists — default to now() if missing
+        $loanDate = data_get($data, 'loan_date', now()->toDateString());
+        $payday = data_get($data, 'payday');
 
-            $this->halt(); // prevent saving
+        // Store loan_date back into $data (especially if it's missing due to being disabled)
+        $data['loan_date'] = $loanDate;
+
+        // Validate both dates exist before comparing
+        if ($loanDate && $payday) {
+            if (date('Y-m', strtotime($loanDate)) !== date('Y-m', strtotime($payday))) {
+                Notification::make()
+                    ->title('Tanggal pinjaman dan bayar harus dalam bulan yang sama.')
+                    ->danger()
+                    ->send();
+
+                $this->halt(); // prevent saving
+            }
         }
 
         // Send to FastAPI
@@ -34,7 +43,7 @@ class CreateLoanPrediction extends CreateRecord
                 ->danger()
                 ->send();
 
-            $this->halt();
+            $this->halt(); // prevent saving
         }
 
         // Append prediction results

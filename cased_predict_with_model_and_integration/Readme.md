@@ -139,3 +139,12 @@ Sistem Prediksi Pinjaman ini akan membantu lembaga keuangan untuk:
 ---
 
 **Dokumen ini menjadi acuan utama dalam proses pengembangan dan integrasi sistem prediksi pinjaman online.**
+
+# NB
+```php 
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' fastapi_app
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' data_mining
+docker network create shared_net
+docker network connect shared_net fastapi_app
+docker network connect shared_net data_mining
+```
